@@ -1,0 +1,127 @@
+import { request, response } from "express";
+import { client } from "../DB/db.js";
+import { generateAccessToken } from "../helpers/generateToken.js";
+
+export const getAllUser = async (req = request, res = response) => {
+  try {
+    const sql = `SELECT * FROM users`;
+
+    const querySQL = await client.query(sql);
+
+    res.status(200).json({ status: "Ok", data: querySQL.rows });
+  } catch (err) {
+    res.status(500).json({
+      status: "Failed",
+      error: err.message,
+    });
+  }
+};
+
+export const loginUser = async (req = request, res = response) => {
+  try {
+    const { name_user, password } = req.body;
+    console.log(name_user, password);
+    const sql = `SELECT * FROM "users" WHERE "name_user" = $1 AND "password" = $2`;
+    const results = await client.query(sql, [name_user, password]);
+
+    if (results.rows.length == 0) {
+      // the DB always return an array, if this arrays has length <= 0, that means user don't in DB
+      throw new Error("this username does not exist in the DB");
+    }
+
+    const user = results.rows[0].name_user;
+    const id_user = results.rows[0].id_user;
+    const isAdmin = results.rows[0].adm;
+
+    const token = generateAccessToken(id_user, isAdmin);
+
+    res.cookie("jwt", token, { httpOnly: true, secure: true });
+    res.status(200).json({
+      status: "user logged",
+      data: { isAuthenticated: true, isAdmin },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({
+      status: "FAILED",
+      error: err.message,
+    });
+  }
+};
+
+export const createUser = async (req = request, res = reponse) => {
+  try {
+    const { name_user, password, rol } = req.body;
+    // INSERT the new user.
+    const sql = `INSERT INTO "users"("name_user","password","adm") VALUES ($1,$2,$3)`;
+    const results = await client.query(sql, [name_user, password, rol]);
+
+    // if everthing goes well. res.status(201)
+
+    res.status(201).json({
+      status: "Created",
+    });
+  } catch (err) {
+    // if something goes wrong it will catch and show Error
+    res.status(400).json({
+      status: "FAILED",
+      error: err.message,
+    });
+  }
+};
+
+export const editUser = async (req = request, res = response) => {
+  try {
+    const { id_user, name_user } = req.body;
+
+    // patch name query
+    const sql =
+      "UPDATE users SET name_user = $1 WHERE id_user = $2 RETURNING name_user";
+    const query = await client.query(sql, [name_user, id_user]);
+    console.log(query.rows);
+
+    res.status(200).json({
+      status: "OK",
+      data: "Modifed",
+      new_name: query.rows[0].name_user,
+    });
+  } catch (error) {
+    // if something goes wrong it will catch and show Error
+    res.status(400).json({
+      status: "FAILED",
+      error: error.message,
+    });
+  }
+};
+
+export const deleteUser = async (req = request, res = response) => {
+  try {
+    const { id_user } = req.body;
+    // Query to delete
+    const query = "DELETE  FROM  users  WHERE id_user  = $1";
+    await client.query(query, [id_user]);
+
+    res.status(200).json({ status: "OK", data: "Deleted" });
+  } catch (err) {
+    res.status(500).json({
+      status: "Failed server",
+      data: err.message,
+    });
+  }
+};
+
+export const logOut = async (req = request, res = response) => {
+  try {
+    res.clearCookie("jwt");
+    res.status(200).json({ msg: "User logged out successfully" });
+  } catch (error) {
+    res.status(500).json({
+      status: "Failed",
+      data: err.message,
+    });
+  }
+};
+
+export const online = async (req = request, res = response) => {
+  res.send("SERVER ONLINE");
+};
