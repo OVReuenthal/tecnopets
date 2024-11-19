@@ -26,4 +26,25 @@ export const postPayments = async (req = request, res = response) => {
         error: err.message,
       });
     }
-  };
+};
+
+export const updatePaymentState = async (request, response) => {
+  try {
+    const { paymemt_id, payment_state_id } = request.body;
+    const sql = `
+      UPDATE public.payments
+        SET payment_state_id=$1
+      WHERE payment_id=$2;
+      `;
+        
+    await client.query(sql, [payment_state_id, payment_id]);
+    response.status(200).json({ message: "Pago actualizado con éxito" });
+    
+  } catch (error) {
+    response.status(500).json({
+      message: "Error al actualizar el estado del pago",
+      error: error.message,
+    });
+  
+  }
+}

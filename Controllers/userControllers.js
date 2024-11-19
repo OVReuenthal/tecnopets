@@ -19,17 +19,17 @@ export const getAllUser = async (req = request, res = response) => {
 
 export const loginUser = async (req = request, res = response) => {
   try {
-    const { name_user, password } = req.body;
-    console.log(name_user, password);
-    const sql = `SELECT * FROM "users" WHERE "name_user" = $1 AND "password" = $2`;
-    const results = await client.query(sql, [name_user, password]);
+    const { user_name, password } = req.body;
+    console.log(user_name, password);
+    const sql = `SELECT * FROM "users" WHERE "user_name" = $1 AND "password" = $2`;
+    const results = await client.query(sql, [user_name, password]);
 
     if (results.rows.length == 0) {
       // the DB always return an array, if this arrays has length <= 0, that means user don't in DB
       throw new Error("this username does not exist in the DB");
     }
 
-    const user = results.rows[0].name_user;
+    const user = results.rows[0].user_name;
     const id_user = results.rows[0].id_user;
     const isAdmin = results.rows[0].adm;
 
@@ -51,10 +51,10 @@ export const loginUser = async (req = request, res = response) => {
 
 export const createUser = async (req = request, res = reponse) => {
   try {
-    const { name_user, password, rol } = req.body;
+    const { user_name, password, rol } = req.body;
     // INSERT the new user.
-    const sql = `INSERT INTO "users"("name_user","password","adm") VALUES ($1,$2,$3)`;
-    const results = await client.query(sql, [name_user, password, rol]);
+    const sql = `INSERT INTO "users"("user_name","password","adm") VALUES ($1,$2,$3)`;
+    const results = await client.query(sql, [user_name, password, rol]);
 
     // if everthing goes well. res.status(201)
 
@@ -72,18 +72,18 @@ export const createUser = async (req = request, res = reponse) => {
 
 export const editUser = async (req = request, res = response) => {
   try {
-    const { id_user, name_user } = req.body;
+    const { id_user, user_name } = req.body;
 
     // patch name query
     const sql =
-      "UPDATE users SET name_user = $1 WHERE id_user = $2 RETURNING name_user";
-    const query = await client.query(sql, [name_user, id_user]);
+      "UPDATE users SET user_name = $1 WHERE id_user = $2 RETURNING user_name";
+    const query = await client.query(sql, [user_name, id_user]);
     console.log(query.rows);
 
     res.status(200).json({
       status: "OK",
       data: "Modifed",
-      new_name: query.rows[0].name_user,
+      new_name: query.rows[0].user_name,
     });
   } catch (error) {
     // if something goes wrong it will catch and show Error
