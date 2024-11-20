@@ -25,20 +25,20 @@ export const loginUser = async (req = request, res = response) => {
     const results = await client.query(sql, [user_name, password]);
 
     if (results.rows.length == 0) {
-      // the DB always return an array, if this arrays has length <= 0, that means user don't in DB
+      // the DB always return an array, if this arrays has length <= 0, that means user is not in DB
       throw new Error("this username does not exist in the DB");
     }
 
     const user = results.rows[0].user_name;
     const id_user = results.rows[0].id_user;
-    const isAdmin = results.rows[0].adm;
+    const role = results.rows[0].role;
 
-    const token = generateAccessToken(id_user, isAdmin);
+    const token = generateAccessToken(id_user, role);
 
     res.cookie("jwt", token, { httpOnly: true, secure: true });
     res.status(200).json({
       status: "user logged",
-      data: { isAuthenticated: true, isAdmin },
+      data: { isAuthenticated: true, role },
     });
   } catch (err) {
     console.log(err);

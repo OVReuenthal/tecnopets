@@ -18,7 +18,7 @@ const routerUser = express.Router();
 routerUser.post(
   "/user/login",
   [
-    check("name_user", "error name").notEmpty().isLength({ max: 20 }), // this "check" are middlewares
+    check("user_name", "error name").notEmpty().isLength({ max: 20 }), // this "check" are middlewares
     check("password", "error password").notEmpty().isLength({ max: 20 }),
     validateFields,
   ],
