@@ -7,6 +7,7 @@ import { productRouter } from "./routers/productsRouter.js";
 import { paymentRouter } from "./routers/paymentsRouter.js";
 import { config } from "dotenv";
 import { selectRouter } from "./routers/selectEndpointRouters.js";
+import { clientRouter } from "./routers/clientrouter.js";
 
 import cookieParser from "cookie-parser";
 const corsOptions = { // CORS politics
@@ -42,6 +43,7 @@ export class Server {
         this.app.use(`${this.path.api}/products`, productRouter);
         this.app.use(`${this.path.api}/payments`, paymentRouter);
         this.app.use(`${this.path.api}/select`, selectRouter);
+        this.app.use(`${this.path.api}/clients`, clientRouter);
     }
 
     listen() {
