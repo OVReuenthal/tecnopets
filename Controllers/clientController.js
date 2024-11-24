@@ -92,8 +92,10 @@ export const createClient = async (req = request, res = response) => {
 export const getWalletById = async (req = request, res = response) => {
   try {
     const { id } = req.params;
-    const sql = "SELECT * FROM wallet WHERE user_id = $1";
+    const sql =
+      "SELECT total_dept, balance, total_dept - balance as dept FROM wallet WHERE user_id = $1";
     const query = await client.query(sql, [id]);
+    console.log(query.rows[0]);
 
     if (query.rows.length === 0) {
       throw new Error("La billetera no existe");
