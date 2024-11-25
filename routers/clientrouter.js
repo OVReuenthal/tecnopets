@@ -1,7 +1,7 @@
 import express from 'express';
 import { check } from 'express-validator';
 import {validateFields} from '../middlewares/validateFields.js';
-import { createClient, getClientById, getClients, getWalletById } from '../Controllers/clientController.js';
+import { createClient, getClientById, getClients, getWalletById, getUserMovements } from '../Controllers/clientController.js';
 import { validatePhone } from '../middlewares/validatePhone.js';
 
 const clientRouter = express.Router();
@@ -34,4 +34,9 @@ export { clientRouter };
 clientRouter.get(
     '/wallet/:id',
     getWalletById
+)
+
+clientRouter.get(
+    '/balance/:id',
+    getUserMovements
 )
