@@ -89,69 +89,7 @@ export const createClient = async (req = request, res = response) => {
   }
 };
 
-export const getWalletById = async (req = request, res = response) => {
-  try {
-    const { id } = req.params;
-    const sql =
-      "SELECT total_dept, balance, total_dept - balance as dept FROM wallet WHERE user_id = $1";
-    const query = await client.query(sql, [id]);
-    console.log(query.rows[0]);
 
-    if (query.rows.length === 0) {
-      throw new Error("La billetera no existe");
-    }
 
-    res.status(200).json({ status: "Ok", data: query.rows[0] });
-  } catch (error) {
-    res.status(500).json({
-      status: "Error",
-      message: "Hubo un error al obtener la wallet",
-      error,
-    });
-  }
-};
 
-export const getUserMovements = async (req = request, res = response) => {
-  try {
-      const { id } = req.params;
-      const sql =
-      `SELECT 
-          'pago' AS movementType, 
-          p.payment_id AS movement_id, 
-          ps.payment_name AS movement_state, 
-          p.payment_amount AS movement_price, 
-          p.payment_date AS movement_date
-      FROM 
-          payments p
-      JOIN 
-          payment_states ps ON p.payment_state_id = ps.payment_state_id
-      JOIN 
-          wallet w ON p.wallet_id = w.wallet_id
-      WHERE 
-          w.user_id = $1
-      UNION ALL
-      SELECT 
-          'orden' AS movementType, 
-          o.order_id AS movement_id, 
-          os.order_state_name AS movement_state, 
-          -o.order_price AS movement_price, 
-          o.order_date AS movement_date
-      FROM 
-          "order" o
-      JOIN 
-          order_state os ON o.order_state_id = os.order_state_id
-      WHERE 
-          o.user_id = $1
-      ORDER BY 
-          movement_date DESC;
-  `;
-  const query = await client.query(sql, [id]);
-  res.status(200).json({ status: "Ok", data: query.rows });
-  } catch (error) {
-    res.status(500).json({
-      status: "Error",
-      message: "Hubo un error al obtener los movements",
-      error,
-    });
-  }
-}
+

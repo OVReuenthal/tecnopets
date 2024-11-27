@@ -29,14 +29,8 @@ clientRouter.get(
     '/:id',
     getClientById
 );
+
+
+
+
 export { clientRouter };
-
-clientRouter.get(
-    '/wallet/:id',
-    getWalletById
-)
-
-clientRouter.get(
-    '/balance/:id',
-    getUserMovements
-)

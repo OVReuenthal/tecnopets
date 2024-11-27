@@ -1,7 +1,7 @@
 import express from 'express';
 import { check } from 'express-validator';
 import {validateFields} from '../middlewares/validateFields.js';
-import { createOrder, getOrders } from '../Controllers/orderControllers.js';
+import { createOrder, getOrders, getFinishedOrderById, getPendingOrdersById } from '../Controllers/orderControllers.js';
 import { validatePhone } from '../middlewares/validatePhone.js';
 
 const orderRouter = express.Router();
@@ -21,6 +21,16 @@ orderRouter.post(
 orderRouter.get(
     '/list',
     getOrders
+);
+
+orderRouter.get(
+    '/finished/:id',
+    getFinishedOrderById
+);
+
+orderRouter.get(
+    '/pending/:id',
+    getPendingOrdersById
 );
     
 export {orderRouter};
