@@ -1,7 +1,7 @@
 import express from 'express';
 import { check } from 'express-validator';
 import {validateFields} from '../middlewares/validateFields.js';
-import { createClient, getClientById, getClients, getWalletById, getUserMovements } from '../Controllers/clientController.js';
+import { createClient, getClientById, getClients} from '../Controllers/clientController.js';
 import { validatePhone } from '../middlewares/validatePhone.js';
 
 const clientRouter = express.Router();

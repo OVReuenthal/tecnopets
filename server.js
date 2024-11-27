@@ -4,11 +4,11 @@ import morgan from "morgan";
 import bodyParser from "body-parser";
 import { routerUser } from "./routers/routerUser.js";
 import { productRouter } from "./routers/productsRouter.js";
-import { paymentRouter } from "./routers/paymentsRouter.js";
 import { config } from "dotenv";
 import { selectRouter } from "./routers/selectEndpointRouters.js";
 import { clientRouter } from "./routers/clientrouter.js";
 import { orderRouter } from "./routers/orderRouter.js";
+import { walletRouter } from "./routers/walletRouter.js";
 
 import cookieParser from "cookie-parser";
 const corsOptions = { // CORS politics
@@ -42,7 +42,7 @@ export class Server {
     routes(){
         this.app.use(this.path.api, routerUser);
         this.app.use(`${this.path.api}/products`, productRouter);
-        this.app.use(`${this.path.api}/payments`, paymentRouter);
+        this.app.use(`${this.path.api}/wallet`, walletRouter);
         this.app.use(`${this.path.api}/select`, selectRouter);
         this.app.use(`${this.path.api}/clients`, clientRouter);
         this.app.use(`${this.path.api}/orders`, orderRouter);

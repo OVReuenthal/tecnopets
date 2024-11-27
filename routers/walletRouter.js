@@ -2,7 +2,6 @@ import express from 'express';
 import { check } from 'express-validator';
 import {validateFields} from '../middlewares/validateFields.js';
 import { getUserMovements, getWalletById, updateWallet, postPayments, updatePaymentState } from '../Controllers/walletController.js';
-import { postPayments } from '../Controllers/walletController.js';
 import upload from '../helpers/saveImage.js';
 
 
