@@ -22,7 +22,7 @@ export const getOrders = async (req = request, res = response) => {
             o.order_date DESC;
         `;
 
-    const query = await client.query(sql, [user_id]);
+    const query = await client.query(sql);
 
     res.status(200).json({ status: "Ok", data: query.rows });
   } catch (error) {
@@ -35,7 +35,7 @@ export const getOrders = async (req = request, res = response) => {
 
 export const getPendingOrdersById = async (req = request, res = response) => {
     try {
-        const { id } = req.params.id;
+        const { id } = req.params;
         const sql = `
         SELECT
             o.order_id,
@@ -66,7 +66,7 @@ export const getPendingOrdersById = async (req = request, res = response) => {
 
 export const getFinishedOrderById = async (req = request, res = response) => {
     try {
-        const { id } = req.params.id;
+        const { id } = req.params;
         const sql = `
         SELECT
             o.order_id,
