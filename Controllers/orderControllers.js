@@ -41,7 +41,7 @@ export const getPendingOrdersById = async (req = request, res = response) => {
             o.order_id,
             o.order_date,
             o.order_price,
-            s.order_state_name as order_state,
+            s.order_state_name as order_state
         FROM
             "order" o
         JOIN
@@ -72,7 +72,7 @@ export const getFinishedOrderById = async (req = request, res = response) => {
             o.order_id,
             o.order_date,
             o.order_price,
-            s.order_state_name as order_state,
+            s.order_state_name as order_state
         FROM
             "order" o
         JOIN
@@ -94,6 +94,8 @@ export const getFinishedOrderById = async (req = request, res = response) => {
         });
     }
 }
+
+
 
 
 export const createOrder = async (req = request, res = response) => {
