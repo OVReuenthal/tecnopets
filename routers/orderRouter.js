@@ -1,7 +1,7 @@
 import express from 'express';
 import { check } from 'express-validator';
 import {validateFields} from '../middlewares/validateFields.js';
-import { createOrder, getOrders, getFinishedOrderById, getPendingOrdersById } from '../Controllers/orderControllers.js';
+import { createOrder, getOrders, getFinishedOrderById, getPendingOrdersById, getOrderDetails, deleteOrderById, updateOrderStatus } from '../Controllers/orderControllers.js';
 import { validatePhone } from '../middlewares/validatePhone.js';
 
 const orderRouter = express.Router();
@@ -32,5 +32,25 @@ orderRouter.get(
     '/pending/:id',
     getPendingOrdersById
 );
+
+orderRouter.get(
+    '/details/:id',
+    getOrderDetails
+);
+
+orderRouter.put(
+    '/update-status',
+    [
+      check("order_state_id", "error order_state_id").notEmpty().isInt(),
+      check("order_id", "error order_id").notEmpty().isInt(),
+      validateFields,
+    ],
+    updateOrderStatus
+);
+
+orderRouter.delete(
+    '/delete/:id',
+    deleteOrderById
+)
     
 export {orderRouter};

@@ -125,7 +125,70 @@ export const createOrder = async (req = request, res = response) => {
     }
 }
 
+
+export const updateOrderStatus = async (req = request, res = response) => {
+    const { order_id, order_state_id } = req.body;
+    try{
+        const sql = `
+            UPDATE "order"
+            SET order_state_id=$1
+            WHERE order_id=$2;
+        `;
+        await client.query(sql, [order_state_id, order_id]);
+        res.status(200).json({ status: "Ok", message: "Order status updated successfully" });
+    } catch (error) {
+        res.status(500).json({
+            status: "Failed",
+            error: error.message,
+        });
+    }
+}
+
+export const deleteOrderById = async (req = request, res = response) => {
+    const { order_id } = req.params;
+    try {
+        const sql = `
+            DELETE FROM "order_details"
+            WHERE order_id=$1;
+        `;
+        await client.query(sql, [order_id]);
+        const sql2 = `
+            DELETE FROM "order"
+            WHERE order_id=$1;
+        `;
+        await client.query(sql2, [order_id]);
+        res.status(200).json({ status: "Ok", message: "Order deleted successfully" });
         
+    } catch (error) {
+        res.status(500).json({
+            status: "Failed",
+            error: error.message,
+        });
+    }
+}
 
-
-
+export const getOrderDetails = async (req = request, res = response) => {
+    const { order_id } = req.params;
+    try {
+        const sql = `
+            SELECT
+                od.order_detail_id,
+                p.product_name,
+                od.product_quantity
+            FROM
+                "order_details" od
+            JOIN
+                "products" p ON od.product_id = p.product_id
+            WHERE
+                od.order_id=$1;
+        `;
+        const query = await client.query(sql, [order_id]);
+        res.status(200).json({ status: "Ok", data: query.rows });
+        
+    } catch (error) {
+        res.status(500).json({
+            status: "Failed",
+            error: error.message,
+        });
+    }
+}
