@@ -86,7 +86,7 @@ export const updateWallet = async (req = request, res = response) => {
 export const postPayments = async (req = request, res = response) => {
     try {
       const { payment_type_id, payment_amount, payment_date, wallet_id } = req.body;
-      const payment_state_id = 0;
+      const payment_state_id = 1;
       const payment_img = req.file.filename; // Obtener el nombre del archivo subido
       const sql = `
           INSERT INTO payments (wallet_id, payment_type_id, payment_state_id, payment_amount, payment_date, payment_img)
