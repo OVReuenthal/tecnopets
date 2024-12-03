@@ -19,7 +19,6 @@ export const getClients = async (req = request, res = response) => {
 export const getClientById = async (req = request, res = response) => {
   try {
     const { id } = req.params;
-    console.log(id);
 
     const sql = "SELECT * FROM clients WHERE client_id = $1";
     const query = await client.query(sql, [id]);
@@ -43,7 +42,6 @@ export const createClient = async (req = request, res = response) => {
     const { client_name, rif, email, phone, address, user_name } = req.body;
     const password = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
     const passwordString = password.toString();
-    const role = 0;
     const sqlUser = `
         INSERT INTO public.users(
         user_name, password, role)
@@ -54,7 +52,7 @@ export const createClient = async (req = request, res = response) => {
     const queryUser = await client.query(sqlUser, [
       user_name,
       passwordString,
-      role,
+      0,
     ]);
     const user_id = queryUser.rows[0].user_id;
 
@@ -88,8 +86,3 @@ export const createClient = async (req = request, res = response) => {
     });
   }
 };
-
-
-
-
-

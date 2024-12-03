@@ -1,20 +1,5 @@
 import { request, response } from "express";
 import { client } from "../DB/db.js";
-
-export const updateWallet = async (req = request, res = response) => {
-    try {
-      const { id } = req.params;
-      const sql = "UPDATE wallet SET dept = $1, balance = $2 WHERE user_id = $3";
-      await client.query(sql, [dept, balance, id]);
-      res.status(200).json({ status: "Ok", message: "Billetera actualizada" });
-    } catch (error) {
-      res.status(500).json({
-        status: "Error",
-        message: "Hubo un error al actualizar la billetera",
-        error,
-      });
-    }
-};
   
   export const getUserMovements = async (req = request, res = response) => {
     try {
@@ -86,8 +71,7 @@ export const updateWallet = async (req = request, res = response) => {
 export const postPayments = async (req = request, res = response) => {
     try {
       const { payment_type_id, payment_amount, payment_date, wallet_id } = req.body;
-      const payment_state_id = 1;
-      const payment_img = req.file.filename; // Obtener el nombre del archivo subido
+      const payment_img = req.file ? req.file.filename : '';
       const sql = `
           INSERT INTO payments (wallet_id, payment_type_id, payment_state_id, payment_amount, payment_date, payment_img)
           VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
@@ -96,7 +80,7 @@ export const postPayments = async (req = request, res = response) => {
       const result = await client.query(sql, [
         wallet_id,
         payment_type_id,
-        payment_state_id,
+        1,
         payment_amount,
         payment_date,
         payment_img

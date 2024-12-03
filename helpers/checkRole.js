@@ -17,7 +17,7 @@ export function checkRole(req = request, res = response, next) {
 
     if (role === 0) {
       console.log("Usuario es Cliente");
-      req.userRole = 'cliente'; // Puedes usar esta información en los siguientes middlewares o rutas
+      req.userRole = 'cliente';
       next();
     } else if (role === 1) {
       console.log("Usuario es Administrador");
