@@ -110,12 +110,18 @@ export const createOrder = async (req = request, res = response) => {
         const orderquery = await client.query(orderSql, [user_id, order_date, 1, order_price]);
 
         for(let item of items) {
-            console.log(item);
+            
             const itemSql = `
                 INSERT INTO "order_details" (product_id, order_id, product_quantity)
                 VALUES ($1, $2, $3);
             `;
             const itemQuery = await client.query(itemSql, [item.product_id, orderquery.rows[0].order_id, item.quantity]);
+
+            const updateStockSql = ` UPDATE products SET stock = stock - $1 WHERE product_id = $2; `;
+            
+            const updateStockQuery = await client.query(updateStockSql, [item.quantity, item.product_id]);
+
+
         }
         res.status(201).json({ status: "Ok", data: orderquery.rows[0] });
         
