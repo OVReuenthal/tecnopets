@@ -2,9 +2,10 @@ import express from 'express';
 import { check } from 'express-validator';
 import {validateFields} from '../middlewares/validateFields.js';
 import { createOrder, getOrders, getFinishedOrderById, getPendingOrdersById, getOrderDetails, deleteOrderById, updateOrderStatus } from '../Controllers/orderControllers.js';
-import { validatePhone } from '../middlewares/validatePhone.js';
+import { validateStock } from '../middlewares/validateStock.js'
 
 const orderRouter = express.Router();
+
 
 orderRouter.post(
     '/upload-order', 
@@ -14,9 +15,10 @@ orderRouter.post(
       check("order_price", "error order_price").notEmpty().isFloat({ min: 0 }),
       check("items", "error order_price").notEmpty().isArray(),
       validateFields,
+      validateStock
     ],
     createOrder
-);
+  );
 
 orderRouter.get(
     '/list',
