@@ -9,6 +9,7 @@ export const getProducts = async (req = request, res = response) => {
         p.product_name AS title, 
         p.product_price AS price, 
         p.product_img AS thumbnail,
+        p.stock as stock,
         c.category_name AS category
         FROM products p
         JOIN categories c ON p.category_id = c.category_id

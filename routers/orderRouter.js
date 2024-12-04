@@ -34,7 +34,7 @@ orderRouter.get(
 );
 
 orderRouter.get(
-    '/details/:id',
+    '/details/:order_id',
     getOrderDetails
 );
 
@@ -49,7 +49,7 @@ orderRouter.put(
 );
 
 orderRouter.delete(
-    '/delete/:id',
+    '/delete/:order_id',
     deleteOrderById
 )
     

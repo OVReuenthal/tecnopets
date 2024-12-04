@@ -185,6 +185,8 @@ export const getOrderDetails = async (req = request, res = response) => {
                 od.order_id=$1;
         `;
         const query = await client.query(sql, [order_id]);
+        console.log(order_id); // Verifica el valor de order_id antes de ejecutar la consulta
+        console.log(query.rows); 
         res.status(200).json({ status: "Ok", data: query.rows });
         
     } catch (error) {
