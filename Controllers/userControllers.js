@@ -29,7 +29,8 @@ export const getToken = (req = request, res = response, next) => {
     }
 
     const decode = jwt.verify(token, process.env.TOKEN_SECRET);
-    req.usuario = decode;
+
+    res.status(200).json({ status: "OK", data: decode });
 
   } catch (error) {
     console.log(error);
@@ -50,7 +51,7 @@ export const loginUser = async (req = request, res = response) => {
     }
 
     const user = results.rows[0].user_name;
-    const id_user = results.rows[0].id_user;
+    const id_user = results.rows[0].user_id;
     const role = results.rows[0].role;
 
     const token = generateAccessToken(id_user, role);
@@ -58,7 +59,7 @@ export const loginUser = async (req = request, res = response) => {
     res.cookie("jwt", token, { httpOnly: true, secure: true });
     res.status(200).json({
       status: "user logged",
-      data: { isAuthenticated: true, role },
+      data: { isAuthenticated: true, role, id_user },
     });
   } catch (err) {
     console.log(err);
