@@ -1,6 +1,7 @@
 import { request, response } from "express";
 import { client } from "../DB/db.js";
 import { generateAccessToken } from "../helpers/generateToken.js";
+import jwt from 'jsonwebtoken';
 
 export const getAllUser = async (req = request, res = response) => {
   try {
@@ -16,6 +17,25 @@ export const getAllUser = async (req = request, res = response) => {
     });
   }
 };
+
+export const getToken = (req = request, res = response, next) => {
+  try {
+    const token = req.cookies.jwt;
+
+    if (!token) {
+      return res.status(401).json({
+        error: "Usted no tiene un token de acceso",
+      });
+    }
+
+    const decode = jwt.verify(token, process.env.TOKEN_SECRET);
+    req.usuario = decode;
+
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({ error: 'Token inválido' });
+  }
+}
 
 export const loginUser = async (req = request, res = response) => {
   try {
