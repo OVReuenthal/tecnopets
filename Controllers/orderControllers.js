@@ -110,7 +110,7 @@ export const createOrder = async (req = request, res = response) => {
         const orderquery = await client.query(orderSql, [user_id, order_date, 1, order_price]);
 
         for(let item of items) {
-            
+
             const itemSql = `
                 INSERT INTO "order_details" (product_id, order_id, product_quantity)
                 VALUES ($1, $2, $3);
@@ -135,8 +135,31 @@ export const createOrder = async (req = request, res = response) => {
 
 
 export const updateOrderStatus = async (req = request, res = response) => {
-    const { order_id, order_state_id } = req.body;
+    const { order_id, order_state_id, wallet_id } = req.body;
+
     try{
+        if (order_state_id === 5) {
+
+            const fechaActual = new Date();
+            fechaActual.setDate(fechaActual.getDate() + 28);
+
+            
+            const año = fechaActual.getFullYear();
+            const mes = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
+            const dia = ("0" + fechaActual.getDate()).slice(-2);
+
+            // Formatear la nueva fecha como YYYY-MM-DD
+            const nuevaFecha = `${año}-${mes}-${dia}`;
+
+    
+            const sql = `
+                UPDATE "wallet"
+                SET due_date=$1
+                WHERE wallet_id=$2;
+            `;
+            await client.query(sql, [order_state_id, wallet_id]);
+            res.status(200).json({ status: "Ok", message: "Order status updated successfully" });
+        }
         const sql = `
             UPDATE "order"
             SET order_state_id=$1

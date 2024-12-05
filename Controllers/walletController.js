@@ -1,5 +1,31 @@
 import { request, response } from "express";
 import { client } from "../DB/db.js";
+
+export const getDollar = async (req, res) => {
+  try {
+      const response = await fetch('https://pydolarve.org/api/v1/dollar');
+      if (!response.ok) {
+          throw new Error('Error al obtener los datos del servidor');
+      }
+      
+      const data = await response.json();
+      
+      // Acceder al precio del BCV y mostrarlo en la consola
+      const bcvPrice = data.monitors.bcv.price;
+      console.log("BCV Price: ", bcvPrice);
+
+      res.status(200).json({ status: "Ok", data: data.monitors.bcv.price });
+      
+  } catch (error) {
+    res.status(500).json({
+      status: "Error",
+      message: "Hubo un error al obtener el precio del dólar",
+      error: error.message,
+    });
+  }
+}
+
+
   
   export const getUserMovements = async (req = request, res = response) => {
     try {
