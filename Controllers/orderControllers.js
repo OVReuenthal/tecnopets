@@ -35,7 +35,7 @@ export const getOrders = async (req = request, res = response) => {
 
 export const getPendingOrdersById = async (req = request, res = response) => {
     try {
-        const { id } = req.params;
+        const { user_id } = req.body;
         const sql = `
         SELECT
             o.order_id,
@@ -53,7 +53,7 @@ export const getPendingOrdersById = async (req = request, res = response) => {
         ORDER BY
             o.order_date DESC;
         `;
-        const pendingQuery = await client.query(sql, [id]);
+        const pendingQuery = await client.query(sql, [user_id]);
         res.status(200).json({ status: "Ok", data: pendingQuery.rows });
         
     } catch (error) {
@@ -66,7 +66,7 @@ export const getPendingOrdersById = async (req = request, res = response) => {
 
 export const getFinishedOrderById = async (req = request, res = response) => {
     try {
-        const { id } = req.params;
+        const { user_id } = req.body;
         const sql = `
         SELECT
             o.order_id,
@@ -84,7 +84,7 @@ export const getFinishedOrderById = async (req = request, res = response) => {
         ORDER BY
             o.order_date DESC;
         `;
-        const finishedQuery = await client.query(sql, [id]);
+        const finishedQuery = await client.query(sql, [user_id]);
         res.status(200).json({ status: "Ok", data: finishedQuery.rows });
         
     } catch (error) {
@@ -135,30 +135,49 @@ export const createOrder = async (req = request, res = response) => {
 
 
 export const updateOrderStatus = async (req = request, res = response) => {
-    const { order_id, order_state_id, wallet_id } = req.body;
+    const { order_id, order_state_id, user_id } = req.body;
 
     try{
-        if (order_state_id === 5) {
+        if (order_state_id === 4) {
+            
+            const sqlWallet = `
+                SELECT wallet_id
+                FROM "wallet"
+                WHERE user_id=$1;
+            `;
+            const walletQuery = await client.query(sqlWallet, [user_id]);
+            const wallet_id = walletQuery.rows[0].wallet_id;
+            console.log(wallet_id); // Muestra el ID de la billetera
 
+            const orderDatasql = `SELECT order_price FROM "order" WHERE user_id = $1`;
+            const orderDataQuery = await client.query(orderDatasql, [user_id]);
+
+            const order_price = orderDataQuery.rows[0].order_price;
+
+            // Crear un nuevo objeto Date para la fecha y hora actuales
             const fechaActual = new Date();
+
+            // Sumar 28 días a la fecha actual
             fechaActual.setDate(fechaActual.getDate() + 28);
 
-            
+            // Obtener el año, mes y día de la nueva fecha
             const año = fechaActual.getFullYear();
             const mes = ("0" + (fechaActual.getMonth() + 1)).slice(-2);
             const dia = ("0" + fechaActual.getDate()).slice(-2);
 
             // Formatear la nueva fecha como YYYY-MM-DD
-            const nuevaFecha = `${año}-${mes}-${dia}`;
+            const nuevaFecha = `${año}/${mes}/${dia}`;
+
+            console.log(nuevaFecha); // Muestra la nueva fecha en formato YYYY-MM-DD
+
 
     
             const sql = `
                 UPDATE "wallet"
-                SET due_date=$1
-                WHERE wallet_id=$2;
+                SET due_date=$1, total_dept = $2
+                WHERE wallet_id=$3;
             `;
-            await client.query(sql, [order_state_id, wallet_id]);
-            res.status(200).json({ status: "Ok", message: "Order status updated successfully" });
+            await client.query(sql, [nuevaFecha, order_price, wallet_id]);
         }
         const sql = `
             UPDATE "order"
@@ -168,6 +187,7 @@ export const updateOrderStatus = async (req = request, res = response) => {
         await client.query(sql, [order_state_id, order_id]);
         res.status(200).json({ status: "Ok", message: "Order status updated successfully" });
     } catch (error) {
+        console.log(error.message);
         res.status(500).json({
             status: "Failed",
             error: error.message,

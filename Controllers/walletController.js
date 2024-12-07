@@ -5,7 +5,7 @@ import { client } from "../DB/db.js";
   
   export const getUserMovements = async (req = request, res = response) => {
     try {
-        const { id } = req.params;
+        const { user_id } = req.body;
         const sql =
         `SELECT 
             'pago' AS movementType, 
@@ -37,7 +37,7 @@ import { client } from "../DB/db.js";
         ORDER BY 
             movement_date DESC;
     `;
-    const query = await client.query(sql, [id]);
+    const query = await client.query(sql, [user_id]);
     res.status(200).json({ status: "Ok", data: query.rows });
     } catch (error) {
       res.status(500).json({
@@ -48,9 +48,9 @@ import { client } from "../DB/db.js";
     }
   }
 
-  export const getWalletById = async (req = request, res = response) => {
+export const getWalletById = async (req = request, res = response) => {
     try {
-      const { id } = req.params;
+      const { user_id } = req.body;
 
       const response = await fetch('https://pydolarve.org/api/v1/dollar');
       if (!response.ok) {
@@ -62,22 +62,27 @@ import { client } from "../DB/db.js";
       const bcvPrice = data.monitors.bcv.price;
 
       const sql =
-        "SELECT total_dept, balance, total_dept - balance as dept FROM wallet WHERE user_id = $1";
-      const query = await client.query(sql, [id]);
+        "SELECT total_dept, balance, total_dept - balance as dept, due_date FROM wallet WHERE user_id = $1";
+      const query = await client.query(sql, [user_id]);
   
       if (query.rows.length === 0) {
         throw new Error("La billetera no existe");
       }
-  
-      res.status(200).json({ status: "Ok", data: query.rows[0] });
+
+      // Añadir bcvPrice al objeto de datos que estás enviando
+      res.status(200).json({ 
+        status: "Ok", 
+        data: { ...query.rows[0], bcvPrice } 
+      });
     } catch (error) {
       res.status(500).json({
         status: "Error",
         message: "Hubo un error al obtener la wallet",
-        error,
+        error: error.message,
       });
     }
-  };
+};
+
 
 export const postPayments = async (req = request, res = response) => {
     try {
@@ -107,7 +112,29 @@ export const postPayments = async (req = request, res = response) => {
 
 export const updatePaymentState = async (request, response) => {
   try {
-    const { payment_id, payment_state_id } = request.body;
+    const { payment_id, payment_state_id, user_id } = request.body;
+    if (payment_state_id === 2){
+
+      const paymentSql = `select * from payment where payment_id = ?;`;
+      const paymentResult = await client.query(paymentSql, [payment_id]);
+      const payment_amount = paymentResult.rows[0].payment_amount;
+
+      const walletSql = `select * from wallet where user_id = $1;`;
+      const walletData = await client.query(walletSql, [user_id]);
+      const balance = walletData.rows[0].balance + payment_amount;
+      const total_depth = walletData.rows[0].total_depth;
+      
+
+      if (balance >= total_depth) {
+        const new_balance = balance - total_depth;
+        const updateWalletSql = `UPDATE wallet SET balance=$1, total_dept = $2, due_date = $3 WHERE user_id=$4;`;
+        await client.query(updateWalletSql, [new_balance, 0, "", user_id]);
+      } else { 
+        const updateWalletBalance = `UPDATE wallet SET balance=$1 WHERE user_id=$2;`;
+        await client.query(updateWalletSql, [updateWalletBalance, user_id]);
+      }
+
+    }
     const sql = `
       UPDATE public.payments
         SET payment_state_id=$1

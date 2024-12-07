@@ -27,13 +27,16 @@ orderRouter.get(
 );
 
 orderRouter.get(
-    '/finished/:id',
+    '/finished',
+    authenticateToken,
     getFinishedOrderById
 );
 
 orderRouter.get(
-    '/pending/:id',
+    '/pending/',
+    authenticateToken,
     getPendingOrdersById
+    
 );
 
 orderRouter.get(
@@ -48,6 +51,7 @@ orderRouter.put(
       check("order_id", "error order_id").notEmpty().isInt(),
       validateFields,
     ],
+    authenticateToken,
     updateOrderStatus
 );
 
