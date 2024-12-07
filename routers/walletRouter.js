@@ -3,6 +3,7 @@ import { check } from 'express-validator';
 import {validateFields} from '../middlewares/validateFields.js';
 import { getUserMovements, getWalletById, postPayments, updatePaymentState } from '../Controllers/walletController.js';
 import upload from '../helpers/saveImage.js';
+import {authenticateToken} from '../middlewares/authenticateToken.js';
 
 
 const walletRouter = express.Router();
@@ -17,26 +18,30 @@ walletRouter.post(
       check("payment_type_id", "error payment_type_id").notEmpty().isInt(),
       validateFields,
     ],
+    authenticateToken,
     postPayments
 );
 
 walletRouter.get(
-    '/:id',
+    '/wallet',
+    authenticateToken,
     getWalletById
 )
 
 walletRouter.get(
-    '/movements/:id',
+    '/movements',
+    authenticateToken,
     getUserMovements
 )
 
 walletRouter.put(
-    '/update-payment-state/:id',
+    '/update-payment-state',
     [
       check("payment_id", "error payment_id").notEmpty().isLength({ max: 20 }),
       check("payment_state", "error payment_state").notEmpty().isBoolean(),
       validateFields,
     ],
+    authenticateToken,
     updatePaymentState
 )
 

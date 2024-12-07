@@ -15,6 +15,7 @@ export const authenticateToken = (req = request, res = response, next) => {
 
     // Añadir el user_id decodificado al body del request
     req.body.user_id = decode.id;
+    console.log(req.body.user_id);
 
     // Continuar al siguiente middleware o controlador
     next();

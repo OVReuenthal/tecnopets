@@ -55,11 +55,11 @@ export const createClient = async (req = request, res = response) => {
       0,
     ]);
     const user_id = queryUser.rows[0].user_id;
-
+    
     const sql = `
             INSERT INTO public.clients(
             user_id, client_name, rif, email, phone, address)
-            VALUES ($1, $2, $3, $4, $5, $6) RETURNING user_id;
+            VALUES ($1, $2, $3, $4, $5, $6);
         `;
     const query = await client.query(sql, [
       user_id,
@@ -70,14 +70,18 @@ export const createClient = async (req = request, res = response) => {
       address,
     ]);
 
+    const sqlWallet = `
+      INSERT INTO public.wallet(
+	    user_id, total_dept, balance)
+	    VALUES ($1, $2, $3);
+    `;
+    console.log("user_id: " + user_id);
+    await client.query(sqlWallet, [user_id, 0, 0]);
+    
+
     res.status(201).json({ status: "Ok", data: query.rows[0] });
 
-    const sqlWallet = `
-        INSERT INTO public.wallet(
-        user_id, dept, balance)
-        VALUES ($1, $2, $3);
-        `;
-    await client.query(sqlWallet, [user_id, 0, 0]);
+
   } catch (error) {
     res.status(500).json({
       status: "Error",
