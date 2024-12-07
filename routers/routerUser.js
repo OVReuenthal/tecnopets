@@ -6,17 +6,14 @@ import {
   loginUser,
   online,
   editUser,
-  logOut,
-  getToken
+  logOut
 } from "../Controllers/userControllers.js";
 import { validateFields } from "../middlewares/validateFields.js";
 import { check } from "express-validator";
 import { validateUser } from "../middlewares/validateData.js";
-import { authenticateToken } from "../Helpers/authenticateToken.js";
+import { authenticateToken } from "../middlewares/authenticateToken.js";
 
 const routerUser = express.Router();
-
-routerUser.get("/user/token", getToken);
 
 routerUser.post(
   "/user/login",
