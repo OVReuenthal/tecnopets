@@ -18,26 +18,6 @@ export const getAllUser = async (req = request, res = response) => {
   }
 };
 
-export const getToken = (req = request, res = response, next) => {
-  try {
-    const token = req.cookies.jwt;
-
-    if (!token) {
-      return res.status(401).json({
-        error: "Usted no tiene un token de acceso",
-      });
-    }
-
-    const decode = jwt.verify(token, process.env.TOKEN_SECRET);
-
-    res.status(200).json({ status: "OK", data: decode });
-
-  } catch (error) {
-    console.log(error);
-    res.status(401).json({ error: 'Token inválido' });
-  }
-}
-
 export const loginUser = async (req = request, res = response) => {
   try {
     const { user_name, password } = req.body;
@@ -46,7 +26,6 @@ export const loginUser = async (req = request, res = response) => {
     const results = await client.query(sql, [user_name, password]);
 
     if (results.rows.length == 0) {
-      // the DB always return an array, if this arrays has length <= 0, that means user is not in DB
       throw new Error("this username does not exist in the DB");
     }
 
