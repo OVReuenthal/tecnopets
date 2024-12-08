@@ -126,6 +126,7 @@ export const createOrder = async (req = request, res = response) => {
         res.status(201).json({ status: "Ok", data: orderquery.rows[0] });
         
     } catch (error) {
+        console.log(error);
         res.status(500).json({
             status: "Failed",
             error: error.message,

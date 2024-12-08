@@ -33,7 +33,7 @@ orderRouter.get(
 );
 
 orderRouter.get(
-    '/pending/',
+    '/pending',
     authenticateToken,
     getPendingOrdersById
     

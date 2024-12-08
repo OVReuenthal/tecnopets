@@ -35,7 +35,7 @@ export const loginUser = async (req = request, res = response) => {
 
     const token = generateAccessToken(id_user, role);
 
-    res.cookie("jwt", token, { httpOnly: true, secure: true });
+    res.cookie("jwt", token, { httpOnly: true, secure: false });
     res.status(200).json({
       status: "user logged",
       data: { isAuthenticated: true, role, id_user },

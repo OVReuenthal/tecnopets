@@ -110,6 +110,7 @@ export const postPayments = async (req = request, res = response) => {
     }
 };
 
+
 export const updatePaymentState = async (request, response) => {
   try {
     const { payment_id, payment_state_id, user_id } = request.body;
