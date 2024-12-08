@@ -1,7 +1,70 @@
 import { request, response } from "express";
 import { client } from "../DB/db.js";
 
+  export const getPayments = async (req, res) =>
+  {
+    try {
+        const sql =
+        `
+          SELECT 
+          p.payment_id,
+          c.client_name,
+          ps.payment_name AS payment_state,
+          p.payment_amount,
+          p.payment_date,
+          pt.payment_type
+          FROM 
+              payments p
+          JOIN 
+              wallet w ON p.wallet_id = w.wallet_id
+          JOIN 
+              clients c ON w.user_id = c.user_id
+          JOIN 
+              payment_states ps ON p.payment_state_id = ps.payment_state_id
+          JOIN 
+              payment_types pt ON p.payment_type_id = pt.payment_type_id
+          ORDER BY 
+              p.payment_date;
 
+        `;
+        const query = await client.query(sql);
+        res.status(200).json({ status: "Ok", data: query.rows });
+    } catch (error) {
+      res.status(500).json({
+        status: "Error",
+        message: error.message,
+      });
+    }
+  };
+
+  export const getPaymentImage = async (req, res) => {
+    try {
+        const { payment_id } = req.params;
+        const sql =
+        `SELECT 
+            p.payment_image AS image
+        FROM 
+            payments p
+        WHERE 
+            p.payment_id = $1;
+    `;
+
+    const query = await client.query(sql, [payment_id]);
+
+    if (query.rows.length === 0) {
+      throw new Error("No image found for this payment");
+    }
+
+    const paymentImage = `${this.path.api}` + query.rows[0].image
+
+    res.status(200).json({ status: "Ok", data: query.rows });
+    } catch (error) {
+      res.status(500).json({
+        status: "Error",
+        message: error.message,
+      });
+    }
+  }
   
   export const getUserMovements = async (req = request, res = response) => {
     try {
@@ -92,7 +155,7 @@ export const postPayments = async (req = request, res = response) => {
       const walletSql = `select wallet_id from wallet where user_id = $1;`;
       const walletResult = await client.query(walletSql, [user_id]);
       const wallet_id = walletResult.rows[0].wallet_id;
-      
+
       const sql = `
           INSERT INTO payments (wallet_id, payment_type_id, payment_state_id, payment_amount, payment_date, payment_img)
           VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
