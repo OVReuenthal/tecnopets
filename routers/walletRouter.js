@@ -1,12 +1,24 @@
 import express from 'express';
 import { check } from 'express-validator';
 import {validateFields} from '../middlewares/validateFields.js';
-import { getUserMovements, getWalletById, postPayments, updatePaymentState, getPayments } from '../Controllers/walletController.js';
+import { getUserMovements, getWalletById, postPayments, updatePaymentState, getPayments, getPaymentImage, deletePayment } from '../Controllers/walletController.js';
 import upload from '../helpers/saveImage.js';
 import {authenticateToken} from '../middlewares/authenticateToken.js';
 
 
 const walletRouter = express.Router();
+
+walletRouter.get(
+    '/payment-image/:id',
+    authenticateToken,
+    getPaymentImage
+);
+
+walletRouter.delete(
+    '/delete-payment/:id',
+    authenticateToken,
+    deletePayment
+)
 
 walletRouter.get(
     '/payments',

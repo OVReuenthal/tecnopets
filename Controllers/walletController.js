@@ -37,34 +37,40 @@ import { client } from "../DB/db.js";
     }
   };
 
-  export const getPaymentImage = async (req, res) => {
+export const getPaymentImage = async (req = request, res = response) => {
     try {
-        const { payment_id } = req.params;
-        const sql =
-        `SELECT 
-            p.payment_image AS image
-        FROM 
-            payments p
-        WHERE 
-            p.payment_id = $1;
-    `;
+        const { id } = req.params;
+        const sql = `
+            SELECT 
+                p.payment_image AS image
+            FROM 
+                payments p
+            WHERE 
+                p.payment_id = $1;
+        `;
 
-    const query = await client.query(sql, [payment_id]);
+        const query = await client.query(sql, [id]);
 
-    if (query.rows.length === 0) {
-      throw new Error("No image found for this payment");
-    }
+        if (query.rows.length === 0) {
+            return res.status(404).json({
+                status: "Error",
+                message: "No image found for this payment",
+            });
+        }
 
-    const paymentImage = `${this.path.api}` + query.rows[0].image
+        // Asegúrate de tener una variable de entorno o configuración para la URL base de tu API
+        const directory = process.env.IMAGE_DIRECTORY;
+        const paymentImage = `${directory}${query.rows[0].image}`;
 
-    res.status(200).json({ status: "Ok", data: query.rows });
+        res.status(200).json({ status: "Ok", data: paymentImage });
     } catch (error) {
-      res.status(500).json({
-        status: "Error",
-        message: error.message,
-      });
+        res.status(500).json({
+            status: "Error",
+            message: error.message,
+        });
     }
-  }
+};
+
   
   export const getUserMovements = async (req = request, res = response) => {
     try {
@@ -219,5 +225,23 @@ export const updatePaymentState = async (request, response) => {
       error: error.message,
     });
   
+  }
+}
+
+export const deletePayment = async ( req = request, res = response ) => {
+  try {
+    const { id } = req.params;
+    const sql = `
+      DELETE FROM public.payments
+      WHERE payment_id = $1;
+    `;
+    await client.query(sql, [id]);
+    res.status(200).json({ message: "Pago eliminado con éxito" });
+    
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al eliminar el pago",
+      error: error.message,
+    });
   }
 }
