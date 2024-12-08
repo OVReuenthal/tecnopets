@@ -155,34 +155,51 @@ export const getWalletById = async (req = request, res = response) => {
 
 export const postPayments = async (req = request, res = response) => {
     try {
-      const { payment_type_id, payment_amount, payment_date, user_id } = req.body;
-      const payment_img = req.file ? req.file.filename : '';
+        const { payment_type_id, payment_amount, payment_date, user_id } = req.body;
+        const payment_img = req.file ? req.file.filename : '';
+        let paymentAmount = payment_amount;
 
-      const walletSql = `select wallet_id from wallet where user_id = $1;`;
-      const walletResult = await client.query(walletSql, [user_id]);
-      const wallet_id = walletResult.rows[0].wallet_id;
+        if (payment_type_id == 1 || payment_type_id == 4) {
+            const response = await fetch('https://pydolarve.org/api/v1/dollar');
+            if (!response.ok) {
+                throw new Error('Error al obtener los datos del servidor');
+            }
+          
+            const data = await response.json();
+            const bcvPrice = data.monitors.bcv.price;
+            paymentAmount = payment_amount / bcvPrice;
+        }
 
-      const sql = `
-          INSERT INTO payments (wallet_id, payment_type_id, payment_state_id, payment_amount, payment_date, payment_img)
-          VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
-          `;
-  
-      const result = await client.query(sql, [
-        wallet_id,
-        payment_type_id,
-        1,
-        payment_amount,
-        payment_date,
-        payment_img
-      ]);
-      res.status(201).json(result.rows[0]);
+        const walletSql = `SELECT wallet_id FROM wallet WHERE user_id = $1;`;
+        const walletResult = await client.query(walletSql, [user_id]);
+        if (walletResult.rows.length === 0) {
+            throw new Error('Wallet not found for the given user');
+        }
+        const wallet_id = walletResult.rows[0].wallet_id;
+
+        const sql = `
+            INSERT INTO payments (wallet_id, payment_type_id, payment_state_id, payment_amount, payment_date, payment_img)
+            VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
+        `;
+
+        const result = await client.query(sql, [
+            wallet_id,
+            payment_type_id,
+            1,
+            paymentAmount,
+            payment_date,
+            payment_img
+        ]);
+        res.status(201).json({ status: "Ok", data: result.rows[0] });
     } catch (err) {
-      res.status(500).json({
-        message: "Error al crear un pago",
-        error: err.message,
-      });
+        res.status(500).json({
+            status: "Error",
+            message: "Error al crear un pago",
+            error: err.message,
+        });
     }
 };
+
 
 
 export const updatePaymentState = async (request, response) => {
