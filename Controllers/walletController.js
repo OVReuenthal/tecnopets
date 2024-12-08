@@ -86,8 +86,13 @@ export const getWalletById = async (req = request, res = response) => {
 
 export const postPayments = async (req = request, res = response) => {
     try {
-      const { payment_type_id, payment_amount, payment_date, wallet_id } = req.body;
+      const { payment_type_id, payment_amount, payment_date, user_id } = req.body;
       const payment_img = req.file ? req.file.filename : '';
+
+      const walletSql = `select wallet_id from wallet where user_id = $1;`;
+      const walletResult = await client.query(walletSql, [user_id]);
+      const wallet_id = walletResult.rows[0].wallet_id;
+      
       const sql = `
           INSERT INTO payments (wallet_id, payment_type_id, payment_state_id, payment_amount, payment_date, payment_img)
           VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;

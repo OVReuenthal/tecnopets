@@ -12,7 +12,6 @@ walletRouter.post(
     '/upload-payment', 
     upload.single('payment_img'),
     [
-      check("wallet_id", "error wallet_id").notEmpty().isLength({ max: 20 }),
       check("payment_amount", "error payment_amount").notEmpty().isFloat({ min: 0 }),
       check("payment_date", "error payment_date").notEmpty().isISO8601(),
       check("payment_type_id", "error payment_type_id").notEmpty().isInt(),
