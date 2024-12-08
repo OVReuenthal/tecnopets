@@ -188,6 +188,7 @@ export const postPayments = async (req = request, res = response) => {
 export const updatePaymentState = async (request, response) => {
   try {
     const { payment_id, payment_state_id, user_id } = request.body;
+    console.log(request.body);
     if (payment_state_id == 2){
 
       const paymentSql = `select * from payment where payment_id = $1;`;
@@ -230,12 +231,12 @@ export const updatePaymentState = async (request, response) => {
 
 export const deletePayment = async ( req = request, res = response ) => {
   try {
-    const { id } = req.params;
+    const { payment_id } = req.params;
     const sql = `
-      DELETE FROM public.payments
+      DELETE FROM "payments"
       WHERE payment_id = $1;
     `;
-    await client.query(sql, [id]);
+    await client.query(sql, [payment_id]);
     res.status(200).json({ message: "Pago eliminado con éxito" });
     
   } catch (error) {
