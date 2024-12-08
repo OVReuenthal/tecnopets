@@ -15,7 +15,7 @@ walletRouter.get(
 );
 
 walletRouter.delete(
-    '/delete-payment/:id',
+    '/delete-payment/:payment_id',
     authenticateToken,
     deletePayment
 )
@@ -55,7 +55,6 @@ walletRouter.put(
     '/update-payment-state',
     [
       check("payment_id", "error payment_id").notEmpty().isLength({ max: 20 }),
-      check("payment_state", "error payment_state").notEmpty().isBoolean(),
       validateFields,
     ],
     authenticateToken,
