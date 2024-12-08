@@ -4,6 +4,8 @@ import {validateFields} from '../middlewares/validateFields.js';
 import { createOrder, getOrders, getFinishedOrderById, getPendingOrdersById, getOrderDetails, deleteOrderById, updateOrderStatus } from '../Controllers/orderControllers.js';
 import { validateStock } from '../middlewares/validateStock.js'
 import { authenticateToken } from '../middlewares/authenticateToken.js';
+import { validateAdmin } from '../middlewares/validateAdmin.js';
+
 
 const orderRouter = express.Router();
 
@@ -18,29 +20,32 @@ orderRouter.post(
       validateStock,
       authenticateToken,
     ],
+    authenticateToken,
     createOrder
   );
 
 orderRouter.get(
     '/list',
+    validateAdmin,
     getOrders
 );
 
 orderRouter.get(
     '/finished',
-    authenticateToken,
+    validateAdmin,
     getFinishedOrderById
 );
 
 orderRouter.get(
     '/pending',
-    authenticateToken,
+    validateAdmin,
     getPendingOrdersById
     
 );
 
 orderRouter.get(
     '/details/:order_id',
+    validateAdmin,
     getOrderDetails
 );
 
@@ -51,12 +56,13 @@ orderRouter.put(
       check("order_id", "error order_id").notEmpty().isInt(),
       validateFields,
     ],
-    authenticateToken,
+    validateAdmin,
     updateOrderStatus
 );
 
 orderRouter.delete(
     '/delete/:order_id',
+    validateAdmin,
     deleteOrderById
 )
     
