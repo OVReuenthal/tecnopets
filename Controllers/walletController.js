@@ -119,7 +119,7 @@ export const postPayments = async (req = request, res = response) => {
 export const updatePaymentState = async (request, response) => {
   try {
     const { payment_id, payment_state_id, user_id } = request.body;
-    if (payment_state_id === 2){
+    if (payment_state_id == 2){
 
       const paymentSql = `select * from payment where payment_id = ?;`;
       const paymentResult = await client.query(paymentSql, [payment_id]);

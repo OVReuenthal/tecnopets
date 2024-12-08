@@ -12,7 +12,7 @@ export const authenticateToken = (req = request, res = response, next) => {
         error: "Usted no tiene un token de acceso",
       });
     }
-    console.log(decode)
+  
 
 
     const decode = jwt.verify(token, process.env.TOKEN_SECRET);

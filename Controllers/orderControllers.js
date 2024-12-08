@@ -139,7 +139,9 @@ export const updateOrderStatus = async (req = request, res = response) => {
     const { order_id, order_state_id, user_id } = req.body;
 
     try{
-        if (order_state_id === 4) {
+        console.log(order_state_id);
+        if (order_state_id == 4) {
+            console.log(order_state_id);
             
             const sqlWallet = `
                 SELECT wallet_id
