@@ -8,8 +8,8 @@ import {authenticateToken} from '../middlewares/authenticateToken.js';
 
 const walletRouter = express.Router();
 
-walletRouter.get(
-    '/payment-image/:id',
+walletRouter.post(
+    '/payment-image',
     authenticateToken,
     getPaymentImage
 );

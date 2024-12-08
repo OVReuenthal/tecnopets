@@ -37,12 +37,13 @@ import { client } from "../DB/db.js";
     }
   };
 
-export const getPaymentImage = async (req = request, res = response) => {
+  export const getPaymentImage = async (req = request, res = response) => {
     try {
-        const { id } = req.params;
+        const { id } = req.body;
+        console.log(id);
         const sql = `
             SELECT 
-                p.payment_image AS image
+                p.payment_img AS image
             FROM 
                 payments p
             WHERE 
@@ -58,18 +59,19 @@ export const getPaymentImage = async (req = request, res = response) => {
             });
         }
 
-        // Asegúrate de tener una variable de entorno o configuración para la URL base de tu API
-        const directory = process.env.IMAGE_DIRECTORY;
-        const paymentImage = `${directory}${query.rows[0].image}`;
+        // La imagen está siendo servida desde la ruta '/images' en el servidor
+        const paymentImage = `/images/${query.rows[0].image}`;
 
         res.status(200).json({ status: "Ok", data: paymentImage });
     } catch (error) {
+      console.log(error);
         res.status(500).json({
             status: "Error",
             message: error.message,
         });
     }
 };
+
 
   
   export const getUserMovements = async (req = request, res = response) => {
@@ -189,9 +191,11 @@ export const updatePaymentState = async (request, response) => {
   try {
     const { payment_id, payment_state_id, user_id } = request.body;
     console.log(request.body);
+    
+    
     if (payment_state_id == 2){
 
-      const paymentSql = `select * from payment where payment_id = $1;`;
+      const paymentSql = `select payment_amount from payments where payment_id = $1;`;
       const paymentResult = await client.query(paymentSql, [payment_id]);
       const payment_amount = paymentResult.rows[0].payment_amount;
 
@@ -207,7 +211,7 @@ export const updatePaymentState = async (request, response) => {
         await client.query(updateWalletSql, [new_balance, 0, "", user_id]);
       } else { 
         const updateWalletBalance = `UPDATE wallet SET balance=$1 WHERE user_id=$2;`;
-        await client.query(updateWalletSql, [updateWalletBalance, user_id]);
+        await client.query(updateWalletBalance, [balance, user_id]);
       }
 
     }
@@ -221,9 +225,12 @@ export const updatePaymentState = async (request, response) => {
     response.status(200).json({ message: "Pago actualizado con éxito" });
     
   } catch (error) {
+    console.log(error);
+    
     response.status(500).json({
       message: "Error al actualizar el estado del pago",
       error: error.message,
+
     });
   
   }
