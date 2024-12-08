@@ -3,6 +3,7 @@ import { check } from 'express-validator';
 import {validateFields} from '../middlewares/validateFields.js';
 import { createClient, getClientById, getClients} from '../Controllers/clientController.js';
 import { validatePhone } from '../middlewares/validatePhone.js';
+import { validateAdmin } from '../middlewares/validateAdmin.js';
 
 const clientRouter = express.Router();
 
@@ -16,17 +17,20 @@ clientRouter.post(
       check("address", "error client_address").notEmpty().isLength({ max: 100 }),
       check("user_name", "error user_name").notEmpty().isLength({ max: 100 })
     ],
+    validateAdmin,  // middleware to validate admin user
     createClient
 );
 
 clientRouter.get(
     '/list',
+    validateAdmin,  // middleware to validate admin user
     getClients
 
 );
 
 clientRouter.get(
     '/:id',
+    validateAdmin,
     getClientById
 );
 

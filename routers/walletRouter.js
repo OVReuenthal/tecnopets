@@ -4,6 +4,7 @@ import {validateFields} from '../middlewares/validateFields.js';
 import { getUserMovements, getWalletById, postPayments, updatePaymentState, getPayments, getPaymentImage, deletePayment } from '../Controllers/walletController.js';
 import upload from '../helpers/saveImage.js';
 import {authenticateToken} from '../middlewares/authenticateToken.js';
+import { validateAdmin } from '../middlewares/validateAdmin.js';
 
 
 const walletRouter = express.Router();
@@ -16,13 +17,13 @@ walletRouter.get(
 
 walletRouter.delete(
     '/delete-payment/:payment_id',
-    authenticateToken,
+    validateAdmin,
     deletePayment
 )
 
 walletRouter.get(
     '/payments',
-    authenticateToken,
+    validateAdmin,
     getPayments
 );
 
@@ -57,7 +58,7 @@ walletRouter.put(
       check("payment_id", "error payment_id").notEmpty().isLength({ max: 20 }),
       validateFields,
     ],
-    authenticateToken,
+    validateAdmin,
     updatePaymentState
 )
 
