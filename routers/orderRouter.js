@@ -26,26 +26,28 @@ orderRouter.post(
 
 orderRouter.get(
     '/list',
-    validateAdmin,
+    //validateAdmin,
     getOrders
 );
 
 orderRouter.get(
     '/finished',
-    validateAdmin,
+    //validateAdmin,
+    authenticateToken,
     getFinishedOrderById
 );
 
 orderRouter.get(
     '/pending',
-    validateAdmin,
+    //validateAdmin,
+    authenticateToken,
     getPendingOrdersById
     
 );
 
 orderRouter.get(
     '/details/:order_id',
-    validateAdmin,
+    //validateAdmin,
     getOrderDetails
 );
 
@@ -62,7 +64,7 @@ orderRouter.put(
 
 orderRouter.delete(
     '/delete/:order_id',
-    validateAdmin,
+    //validateAdmin,
     deleteOrderById
 )
     

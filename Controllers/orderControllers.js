@@ -136,21 +136,31 @@ export const createOrder = async (req = request, res = response) => {
 
 
 export const updateOrderStatus = async (req = request, res = response) => {
-    const { order_id, order_state_id, user_id } = req.body;
+    const { order_id, order_state_id } = req.body;
+    console.log(req.body);
 
     try{
         console.log(order_state_id);
         if (order_state_id == 4) {
             console.log(order_state_id);
             
-            const sqlWallet = `
-                SELECT wallet_id
-                FROM "wallet"
-                WHERE user_id=$1;
+            const sqlUser = `
+                SELECT user_id
+                FROM "order"
+                WHERE order_id=$1;
             `;
+            const userQuery = await client.query(sqlUser, [order_id]);
+            const user_id = userQuery.rows[0].user_id;
+            console.log(user_id); 
+
+            const sqlWallet = `
+            SELECT wallet_id
+            FROM "wallet"
+            WHERE user_id=$1;
+        `;
             const walletQuery = await client.query(sqlWallet, [user_id]);
             const wallet_id = walletQuery.rows[0].wallet_id;
-            console.log(wallet_id); // Muestra el ID de la billetera
+            console.log(wallet_id);
 
             const orderDatasql = `SELECT order_price FROM "order" WHERE user_id = $1`;
             const orderDataQuery = await client.query(orderDatasql, [user_id]);

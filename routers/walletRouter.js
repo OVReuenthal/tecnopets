@@ -17,13 +17,13 @@ walletRouter.post(
 
 walletRouter.delete(
     '/delete-payment/:payment_id',
-    validateAdmin,
+    //validateAdmin,
     deletePayment
 )
 
 walletRouter.get(
     '/payments',
-    validateAdmin,
+    //validateAdmin,
     getPayments
 );
 
@@ -58,7 +58,7 @@ walletRouter.put(
       check("payment_id", "error payment_id").notEmpty().isLength({ max: 20 }),
       validateFields,
     ],
-    validateAdmin,
+    //validateAdmin,
     updatePaymentState
 )
 

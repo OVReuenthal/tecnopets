@@ -32,6 +32,7 @@ export const loginUser = async (req = request, res = response) => {
     const user = results.rows[0].user_name;
     const id_user = results.rows[0].user_id;
     const role = results.rows[0].role;
+    console.log(user, role);
 
     const token = generateAccessToken(id_user, role);
 

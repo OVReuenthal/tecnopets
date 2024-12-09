@@ -15,7 +15,7 @@ export const validateAdmin = (req = request, res = response, next) => {
   
     const decode = jwt.verify(token, process.env.TOKEN_SECRET);
 
-    if (decode.role == 0){
+    if (decode.role == 1){
         return res.status(403).json({
             error: 'Usted no tiene permisos para acceder a este recurso',
         });

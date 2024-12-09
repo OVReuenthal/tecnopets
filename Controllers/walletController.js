@@ -209,7 +209,6 @@ export const updatePaymentState = async (request, response) => {
     const { payment_id, payment_state_id, user_id } = request.body;
     console.log(request.body);
     
-    
     if (payment_state_id == 2){
 
       const paymentSql = `select payment_amount from payments where payment_id = $1;`;
