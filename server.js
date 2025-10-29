@@ -3,13 +3,14 @@ import cors from "cors";
 import morgan from "morgan";
 import bodyParser from "body-parser";
 import path from "path";
-import { routerUser } from "./routers/routerUser.js";
+import { routerUser } from "./routers/userRouter.js";
 import { productRouter } from "./routers/productsRouter.js";
 import { config } from "dotenv";
 import { selectRouter } from "./routers/selectEndpointRouters.js";
-import { clientRouter } from "./routers/clientrouter.js";
+import { clientRouter } from "./routers/clientRouter.js";
 import { orderRouter } from "./routers/orderRouter.js";
 import { walletRouter } from "./routers/walletRouter.js";
+import { routerExchange } from "./routers/exchangeRateRouter.js";
 
 import cookieParser from "cookie-parser";
 const corsOptions = { // CORS politics
@@ -47,9 +48,9 @@ export class Server {
         this.app.use(`${this.path.api}/select`, selectRouter);
         this.app.use(`${this.path.api}/clients`, clientRouter);
         this.app.use(`${this.path.api}/orders`, orderRouter);
+        this.app.use(`${this.path.api}/exchange`, routerExchange);
         this.app.use('/images', express.static(path.join('C:/Users/gonzd/OneDrive/Desktop/tecnopets back/tecnopets/images')));
 
-// Resto de tus rutas...
 
     }
 
